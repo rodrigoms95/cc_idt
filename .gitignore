@@ -1,3 +1,9 @@
+# Ignorar
+/data
+/results
+/temp
+*.code-workspace
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

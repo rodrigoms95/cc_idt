@@ -28,7 +28,7 @@ for i in ds["DURACION"].values:
 # Unimos todos los archivos, reordenamos y renombramos variables.
 ds = xr.concat( ds_i, dim = "DURACION" ).to_dataframe().reset_index("AÑO"
     ).set_index( "TIEMPO_RETORNO", append = True ).reorder_levels(
-    ["south_north", "west_east", "TIEMPO_RETORNO", "DURACION"] ).sort_index(
+    ["south_north", "west_east", "DURACION", "TIEMPO_RETORNO"] ).sort_index(
     ).rename( {"XLONG":"LONGITUD", "XLAT": "LATITUD", "Pcp":"INTENSIDAD"},
     axis = 1 ).to_xarray().set_coords( ["LONGITUD", "LATITUD"] )
 

@@ -24,9 +24,15 @@ df_3[ cols ] = None
 # calcular para las duraciones que se tienen parámetros, un método empírico
 # como el de Aparicio, Chen, o Chow permiten interpolar fácilmente las
 # duraciones.
-#d = [ 5/60, 10/60, 15/60, 20/60, 30/60, 40/60, 1, 1.5, 2, 2.5, 3, 3.5, 4, 5,
-#    6, 8, 10, 12, 14, 16, 18, 20, 22, 24 ] * 132 * 112 * 31
-t = ( [5, 10, 25, 50, 100, 200, 500, 1000] + [None] * 23 ) * 112 * 132 * 24
+#d = ( [ 5/60, 10/60, 15/60, 20/60, 30/60, 40/60, 1, 1.5, 2, 2.5,
+#    3, 3.5, 4, 5, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24 ]
+#    * df_2.index.get_level_values("west_east").unique()
+#    * df_2.index.get_level_values("south_north").unique()
+#    * df_2.index.get_level_values("TIEMPO_RETORNO"").unique() ) )
+t = ( ( [5, 10, 25, 50, 100, 200, 500, 1000] + [None] * 23 )
+    * df_2.index.get_level_values("west_east").unique().shape[0]
+    * df_2.index.get_level_values("south_north").unique().shape[0]
+    * df_2.index.get_level_values("DURACION").unique().shape[0] )
 #df_2["DURACION"] = d
 df_2["TIEMPO_RETORNO"] = t
 df_2 = df_2.dropna()
@@ -35,6 +41,7 @@ df_2 = df_2.dropna()
 
 # Iteramos para cada celda y duración.
 for i in df_3.index.get_level_values("west_east").unique():
+    print("Calculando coordenada x #{i}...")
     for j in df_3.index.get_level_values("west_east").unique():
         for k in df_3.index.get_level_values("DURACION").unique():
             # ajustamos la distribución de valores extremos.

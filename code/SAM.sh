@@ -21,11 +21,12 @@ echo
 
 echo "Calculando estadísticas de precipitación mensual..."
 cdo -s monsum    $input $mean_1".nc"
-cdo -s ymonmin   $mean_1".nc" $mean_1"_1.nc"
-cdo -s ymonmax   $mean_1".nc" $mean_1"_2.nc"
-cdo -s ymonmean  $mean_1".nc" $mean_1"_3.nc"
-cdo -s ymonstd   $mean_1".nc" $mean_1"_4.nc"
-cdo -s merge $mean_1"_1.nc" $mean_1"_2.nc" $mean_1"_3.nc" $mean_1"_4.nc" $mean_2
+cdo -s ymonmin   $mean_1".nc"   $mean_1"_1.nc"
+cdo -s ymonmax   $mean_1".nc"   $mean_1"_2.nc"
+cdo -s ymonmean  $mean_1".nc"   $mean_1"_3.nc"
+cdo -s ymonstd   $mean_1".nc"   $mean_1"_4.nc"
+yes | rm $mean_1
+python mean.py $mean_2
 yes | rm temp/*
 echo "Precipitación media mensual calculada."
 echo

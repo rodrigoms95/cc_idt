@@ -40,8 +40,8 @@ df_2 = df_2.dropna()
 #    ["south_north", "west_east", "DURACION", "TIEMPO_RETORNO"] )
 
 # Iteramos para cada celda y duración.
-for i in df_3.index.get_level_values("west_east").unique():
-    print("Calculando coordenada x #{i}...")
+for i in df_3.index.get_level_values("sout_north").unique():
+    print(f"Calculando coordenada y #{i}...")
     for j in df_3.index.get_level_values("west_east").unique():
         for k in df_3.index.get_level_values("DURACION").unique():
             # ajustamos la distribución de valores extremos.

@@ -25,8 +25,8 @@ cdo -s ymonmin   $mean_1".nc"   $mean_1"_1.nc"
 cdo -s ymonmax   $mean_1".nc"   $mean_1"_2.nc"
 cdo -s ymonmean  $mean_1".nc"   $mean_1"_3.nc"
 cdo -s ymonstd   $mean_1".nc"   $mean_1"_4.nc"
-yes | rm $mean_1
-python mean.py $mean_2
+yes | rm $mean_1".nc"
+python code/mean.py $mean_2
 yes | rm temp/*
 echo "Precipitación media mensual calculada."
 echo

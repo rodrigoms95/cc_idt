@@ -35,27 +35,44 @@ t = ( ( [5, 10, 25, 50, 100, 200, 500, 1000] + [None] * 23 )
     * df_2.index.get_level_values("DURACION").unique().shape[0] )
 #df_2["DURACION"] = d
 df_2["TIEMPO_RETORNO"] = t
-df_2 = df_2.dropna()
+df_2 = df_2.dropna().set_index( "TIEMPO_RETORNO", append = True )
 #df_2 = df_2.set_index("DURACION", append = True).sort_values(
 #    ["south_north", "west_east", "DURACION", "TIEMPO_RETORNO"] )
 
 # Iteramos para cada celda y duración.
-for i in df_3.index.get_level_values("sout_north").unique():
+for i in df_3.index.get_level_values("south_north").unique():
     print(f"Calculando coordenada y #{i}...")
     for j in df_3.index.get_level_values("west_east").unique():
         for k in df_3.index.get_level_values("DURACION").unique():
             # ajustamos la distribución de valores extremos.
-            params = stats.genextreme.fit( df.loc[ (i, j, k), "INTENSIDAD"] )
+            params = stats.genextreme.fit( df.loc[ (i, j, k), "INTENSIDAD" ] )
             # Hacemos la prueba Kolmogorov Smirnoff.
-            pvalue = stats.kstest( df.loc[ (i, j, k), "INTENSIDAD"],
+            pvalue = stats.kstest( df.loc[ (i, j, k), "INTENSIDAD" ],
                 stats.genextreme(*params).cdf ).pvalue
             df_3.loc[ (i, j, k), cols ] = [*params] + [pvalue]
             # Calculamos las intensidades de acuerdo con la distribución.
-            df_2.loc[(i, j, k), "INTENSIDAD"] = stats.genextreme(
-                *df_3.loc[(i, j, k), cols[:-1]] ).isf(
-                1 / df_2.loc[(i, j, k), "TIEMPO_RETORNO"].values )
+            df_2.loc[ (i, j, k), "INTENSIDAD"] = stats.genextreme(
+                *df_3.loc[ (i, j, k), cols[:-1] ] ).isf(
+                1 / df_2.loc[ (i, j, k) ].index.get_level_values(
+                "TIEMPO_RETORNO") )
+
+ds["LONGITUD"] = ds["LONGITUD"].isel( {"DURACION": 1, "TIEMPO_RETORNO": 1}
+    ).drop( ["DURACION", "TIEMPO_RETORNO"] )
+ds["LATITUD"] = ds["LATITUD"].isel( {"DURACION": 1, "TIEMPO_RETORNO": 1}
+    ).drop( ["DURACION", "TIEMPO_RETORNO"] )
 
 # Guardamos los valores de intensidad de las curvas IDF.
-df_2.to_xarray().set_coords( ["LONGITUD", "LATITUD"] ).to_netcdf(path_v)
+ds = df_2.to_xarray().set_coords( ["LONGITUD", "LATITUD"] )
+ds["LONGITUD"] = ds["LONGITUD"].isel( {"DURACION": 1, "TIEMPO_RETORNO": 1}
+    ).drop( ["DURACION", "TIEMPO_RETORNO"] )
+ds["LATITUD"] = ds["LATITUD"].isel( {"DURACION": 1, "TIEMPO_RETORNO": 1}
+    ).drop( ["DURACION", "TIEMPO_RETORNO"] )
+ds.to_netcdf(path_v)
+
 # Guardamos los parámetros de la distribución GEV para las curvas IDF.
-df_3.to_xarray().set_coords( ["LONGITUD", "LATITUD"] ).to_netcdf(path_g)
+ds = df_3.to_xarray().set_coords( ["LONGITUD", "LATITUD"] )
+ds["LONGITUD"] = ds["LONGITUD"].isel( {"DURACION": 1, "TIEMPO_RETORNO": 1}
+    ).drop( ["DURACION", "TIEMPO_RETORNO"] )
+ds["LATITUD"] = ds["LATITUD"].isel( {"DURACION": 1, "TIEMPO_RETORNO": 1}
+    ).drop( ["DURACION", "TIEMPO_RETORNO"] )
+ds.to_netcdf(path_g)

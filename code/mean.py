@@ -26,7 +26,7 @@ ds["MES"] = range(1, 13)
 ds["ESTADISTICA"] = range(1, 5)
 
 # Reordenamos.
-ds.to_dataframe().reorder_levels( ["south_north",
+ds = ds.to_dataframe().reorder_levels( ["south_north",
     "west_east", "MES", "ESTADISTICA"] ).sort_index(
     ).to_xarray().set_coords( ["LONGITUD", "LATITUD"] )
 

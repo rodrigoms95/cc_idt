@@ -31,5 +31,9 @@ ds = xr.concat( ds_i, dim = "DURACION" ).to_dataframe().reset_index("AÑO"
     ["south_north", "west_east", "DURACION", "TIEMPO_RETORNO"] ).sort_index(
     ).rename( {"XLONG":"LONGITUD", "XLAT": "LATITUD", "Pcp":"INTENSIDAD"},
     axis = 1 ).to_xarray().set_coords( ["LONGITUD", "LATITUD"] )
+ds["LONGITUD"] = ds["LONGITUD"].isel( {"DURACION": 1, "TIEMPO_RETORNO": 1}
+    ).drop( ["DURACION", "TIEMPO_RETORNO"] )
+ds["LATITUD"] = ds["LATITUD"].isel( {"DURACION": 1, "TIEMPO_RETORNO": 1}
+    ).drop( ["DURACION", "TIEMPO_RETORNO"] )
 
 ds.to_netcdf(fname)

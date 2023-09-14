@@ -3,16 +3,38 @@
 # Parar al primer error.
 set -e
 
+# Tipo de archivo a procesar
+t="WRF"
+#t="CHIRPS"
+#p="horas"
+p="dias"
+
 # Nombre del archivo a procesar.
-name="prec_hist_hist"
+
+# WRF
+#name="prec_hist_hist"
+name="prec_hist_hist_days"
+
+# CHIRPS
+#name="CHIRPS_comp"
+#name="CHIRPS_megalopolis"
 
 # Ubicación del archivo a procesar.
-input="data/$name.nc"
-curva_masa="temp/$name.nc"
+
+# WRF
+#input="data/$name.nc"
+
+# WRF days
+input="temp/$name.nc"
+
+# CHIRPS
+#input="data/$name.nc"
+
+curva_masa="temp/SAM/$name.nc"
 output_1="results/$name""_tretorno.nc"
 output_2="results/$name""_idf_gumbel.nc"
 output_3="results/$name""_idf_valores.nc"
-mean_1="temp/$name""_stats"
+mean_1="temp/SAM/$name""_stats"
 mean_2="results/$name""_stats.nc"
 
 echo
@@ -26,8 +48,8 @@ cdo -s ymonmax   $mean_1".nc"   $mean_1"_2.nc"
 cdo -s ymonmean  $mean_1".nc"   $mean_1"_3.nc"
 cdo -s ymonstd   $mean_1".nc"   $mean_1"_4.nc"
 yes | rm $mean_1".nc"
-python code/mean.py $mean_2
-yes | rm temp/*
+python code/mean.py $mean_2 $t
+yes | rm temp/SAM/*
 echo "Precipitación media mensual calculada."
 echo
 
@@ -47,12 +69,12 @@ echo
 for i in ${years[@]}
 do
     echo "Procesando año $i..."
-    year_i="temp/$name""_$i.nc"
+    year_i="temp/SAM/$name""_$i.nc"
     # Seleccionamos el año.
     cdo -s selyear,$i $curva_masa $year_i
     echo "Calculando serie de máximos anuales..."
     # Corremos el script que calcula la serie de máximos anuales para el año.
-    python code/SAM_anual.py $i
+    python code/SAM_anual.py $i ${curva_masa%.*} $t $p
     echo "Año $i procesado."
     echo
 done
@@ -65,8 +87,8 @@ echo
 
 # Corremos el script para unir todos los datos, calcular los tiempos de retorno y las probabilidades de excedencia.
 echo "Uniendo todos los datos, calculando tiempos de retorno y probabilidades de excedencia..."
-python code/SAM_total.py $output_1
-yes | rm temp/*
+python code/SAM_total.py $output_1 $t $p
+yes | rm temp/SAM/*
 echo "Tiempo de retorno calculado."
 
 echo

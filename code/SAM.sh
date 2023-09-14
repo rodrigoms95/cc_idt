@@ -2,40 +2,36 @@
 
 # Parar al primer error.
 set -e
+yes | rm -f temp/SAM/*
 
 # Tipo de archivo a procesar
-t="WRF"
-#t="CHIRPS"
 #p="horas"
 p="dias"
 
 # Nombre del archivo a procesar.
 
 # WRF
+#t="WRF"
 #name="prec_hist_hist"
-name="prec_hist_hist_days"
+#name="prec_hist_comp_estaciones"
+#name="prec_hist_comp_CHIRPS"
 
 # CHIRPS
-#name="CHIRPS_comp"
+t="CHIRPS"
+name="CHIRPS_comp"
 #name="CHIRPS_megalopolis"
 
 # Ubicación del archivo a procesar.
-
-# WRF
-#input="data/$name.nc"
-
-# WRF days
 input="temp/$name.nc"
-
-# CHIRPS
 #input="data/$name.nc"
 
+mkdir -p "results/"${name%.*}
 curva_masa="temp/SAM/$name.nc"
-output_1="results/$name""_tretorno.nc"
-output_2="results/$name""_idf_gumbel.nc"
-output_3="results/$name""_idf_valores.nc"
+output_1="results/"${name%.*}"/$name""_tretorno.nc"
+output_2="results/"${name%.*}"/$name""_idf_gumbel.nc"
+output_3="results/"${name%.*}"/$name""_idf_valores.nc"
 mean_1="temp/SAM/$name""_stats"
-mean_2="results/$name""_stats.nc"
+mean_2="results/"${name%.*}"/$name""_stats.nc"
 
 echo
 echo "Cálculo de curvas IDF"

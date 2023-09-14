@@ -10,9 +10,6 @@ period = sys.argv[3]
 path = "temp/SAM/*nc"
 ds = xr.open_mfdataset( path, parallel = True )
 
-# WRF days
-if ( period == "dias" ) and ( type == "WRF" ): ds = ds.drop("XTIME_bnds")
-
 # Iteramos para todas las duraciones.
 ds_i = []
 
@@ -38,13 +35,14 @@ if type == "WRF":
     # Unimos todos los archivos, reordenamos y renombramos variables.
     ds = xr.concat( ds_i, dim = "DURACION" ).to_dataframe().reset_index("AÑO"
         ).set_index( "TIEMPO_RETORNO", append = True ).reorder_levels(
-        ["south_north", "west_east", "DURACION", "TIEMPO_RETORNO"] ).sort_index(
-        ).rename( {"XLONG":"LONGITUD", "XLAT": "LATITUD", "Pcp": "INTENSIDAD"},
-        axis = 1 ).to_xarray().set_coords( ["LONGITUD", "LATITUD"] )
-    ds["LONGITUD"] = ds["LONGITUD"].isel( {"DURACION": 1, "TIEMPO_RETORNO": 1}
-        ).drop( ["DURACION", "TIEMPO_RETORNO"] )
-    ds["LATITUD"] = ds["LATITUD"].isel( {"DURACION": 1, "TIEMPO_RETORNO": 1}
-       ).drop( ["DURACION", "TIEMPO_RETORNO"] )
+        ["south_north", "west_east", "DURACION", "TIEMPO_RETORNO"]
+        ).sort_index().rename( {"XLONG":"LONGITUD", "XLAT": "LATITUD",
+        "Pcp": "INTENSIDAD"}, axis = 1 ).to_xarray(
+        ).set_coords( ["LONGITUD", "LATITUD"] )
+    ds["LONGITUD"] = ds["LONGITUD"].isel( {"DURACION": 0,
+        "TIEMPO_RETORNO": 0, "south_north": 0} )
+    ds["LATITUD"] = ds["LATITUD"].isel( {"DURACION": 1,
+        "TIEMPO_RETORNO": 0, "west_east": 0} )
 
 # CHIRPS
 if type == "CHIRPS":
@@ -65,10 +63,15 @@ if type == "CHIRPS":
         df["PROBABILIDAD"] = 1/ df["TIEMPO_RETORNO"]
         ds_i.append( df.drop("m", axis = 1).to_xarray() )
 
-    ds = xr.concat( ds_i, dim = "DURACION" ).to_dataframe().reset_index("AÑO"
+    ds = xr.concat( ds_i, dim = "DURACION" ).to_dataframe(
+        ).reset_index("AÑO"
         ).set_index( "TIEMPO_RETORNO", append = True ).to_xarray(
-        ).rename_dims( {"latitude": "south_north", "longitude": "west_east"}
         ).rename_vars( {"longitude": "LONGITUD", "latitude": "LATITUD",
         "precip": "INTENSIDAD"} ).set_coords( ["LONGITUD", "LATITUD"] )
-
+    
+    ds["LONGITUD"] = ds["LONGITUD"].isel( {"DURACION": 0,
+        "TIEMPO_RETORNO": 0, "south_north": 0} )
+    ds["LATITUD"]  = ds["LATITUD" ].isel( {"DURACION": 0,
+        "TIEMPO_RETORNO": 0, "west_east": 0} )
+    
 ds.to_netcdf(fname)

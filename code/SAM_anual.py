@@ -18,28 +18,42 @@ if period == "horas":
         30, 36, 42, 48, 60, 72, 84, 96, 108, 120 ]
 if period == "dias":
     dur = [1, 2, 3, 4, 5 ]
-for i in dur:
-    # Abrimos el año, lo recorremos la cantidad de pasos necesarios obtener
-    # la precipitación acumulada para duración en cuestión, lo dividimos
-    # entre la cantidad de pasos para calcular la intensidad de
-    # precipitación, obtenemos el máximo de intensidad anual y agregamos
-    # dimensiones de duración.
 
-    # WRF
-    if type == "WRF":
+# WRF
+if type == "WRF":
+    for i in dur:
+        # Abrimos el año, lo recorremos la cantidad de pasos necesarios
+        # obtener la precipitación acumulada para duración en cuestión, lo
+        # dividimos entre la cantidad de pasos para calcular la intensidad de
+        # precipitación, obtenemos el máximo de intensidad anual y agregamos
+        # dimensiones de duración.
         ds_i.append( ( 
             ( ds - ds.shift( XTIME = i ) ) / i ).max( dim = "XTIME"
             ).assign_coords( coords = {"DURACION": i}
             ).expand_dims( dim = "DURACION" ) )
-    # CHIRPS
-    if type == "CHIRPS":
+
+    # Unimos todas las duraciones.
+    ds = xr.concat( ds_i, dim = "DURACION" ).rename_dims( {
+        "XLAT": "south_north", "XLONG": "west_east"
+        } ).drop_vars("XTIME_bnds")
+
+# CHIRPS
+if type == "CHIRPS":
+    for i in dur:
+        # Abrimos el año, lo recorremos la cantidad de pasos necesarios
+        # obtener la precipitación acumulada para duración en cuestión, lo
+        # dividimos entre la cantidad de pasos para calcular la intensidad de
+        # precipitación, obtenemos el máximo de intensidad anual y agregamos
+        # dimensiones de duración.
         ds_i.append( ( 
             ( ds - ds.shift( time = i ) ) / i  ).max( dim = "time"
             ).assign_coords( coords = {"DURACION": i}
             ).expand_dims( dim = "DURACION" ) )
-
-# Unimos todas las duraciones.
-ds = xr.concat( ds_i, dim = "DURACION" )
+    
+    # Unimos todas las duraciones.
+    ds = xr.concat( ds_i, dim = "DURACION" ).rename_dims( {
+        "latitude": "south_north", "longitude": "west_east"} )
+        
 # Agregamos la dimensión de año.
 ds = ds.assign_coords( coords = {"AÑO":int(y)}
     ).expand_dims( dim = "AÑO" )

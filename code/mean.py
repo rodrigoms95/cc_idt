@@ -14,7 +14,8 @@ type = sys.argv[2]
 if type == "WRF":
     def pre(ds):
         ds = ( ds.expand_dims( ESTADISTICA = 1 ).rename_dims(
-            { "XTIME":"MES" } ).rename_vars( { "XLAT": "LATITUD",
+            { "XTIME": "MES", "XLAT": "south_north",
+            "XLONG": "west_east" } ).rename_vars( { "XLAT": "LATITUD",
             "XLONG": "LONGITUD", "XTIME": "MES", "Pcp": "PRECIPITACION" }
             ).drop_vars( ["XTIME_bnds"] ) )
         return ds
@@ -41,5 +42,10 @@ ds["ESTADISTICA"] = range(1, 5)
 ds = ds.to_dataframe().reorder_levels( ["south_north",
     "west_east", "MES", "ESTADISTICA"] ).sort_index(
     ).to_xarray().set_coords( ["LONGITUD", "LATITUD"] )
+
+ds["LONGITUD"] = ds["LONGITUD"].isel( {"MES": 0,
+    "ESTADISTICA": 0, "south_north": 0} )
+ds["LATITUD"]  = ds["LATITUD" ].isel( {"MES": 0,
+    "ESTADISTICA": 0, "west_east": 0} )
 
 ds.to_netcdf(fname)

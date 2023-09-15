@@ -14,10 +14,10 @@ ds_i = []
 
 # Repetimos para cada duración
 if period == "horas":
-    dur = [1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24,
+    dur = [ 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24,
         30, 36, 42, 48, 60, 72, 84, 96, 108, 120 ]
 if period == "dias":
-    dur = [1, 2, 3, 4, 5 ]
+    dur = [ 1, 2, 3, 4, 5 ]
 
 # WRF
 if type == "WRF":
@@ -33,9 +33,10 @@ if type == "WRF":
             ).expand_dims( dim = "DURACION" ) )
 
     # Unimos todas las duraciones.
-    ds = xr.concat( ds_i, dim = "DURACION" ).rename_dims( {
-        "XLAT": "south_north", "XLONG": "west_east"
-        } ).drop_vars("XTIME_bnds")
+    ds = xr.concat( ds_i, dim = "DURACION"
+        ).rename( { "XLAT": "LATITUD", "XLONG": "LONGITUD" } 
+        ).drop_vars("XTIME_bnds"
+        )
 
 # CHIRPS
 if type == "CHIRPS":
@@ -51,11 +52,12 @@ if type == "CHIRPS":
             ).expand_dims( dim = "DURACION" ) )
     
     # Unimos todas las duraciones.
-    ds = xr.concat( ds_i, dim = "DURACION" ).rename_dims( {
-        "latitude": "south_north", "longitude": "west_east"} )
+    ds = xr.concat( ds_i, dim = "DURACION" ).rename( {
+        "latitude": "LATITUD", "longitude": "LONGITUD"} )
         
 # Agregamos la dimensión de año.
 ds = ds.assign_coords( coords = {"AÑO":int(y)}
     ).expand_dims( dim = "AÑO" )
+
 # Guardamos el archivo.
 ds.to_netcdf(path)

@@ -13,10 +13,10 @@ type = sys.argv[2]
 # WRF
 if type == "WRF":
     def pre(ds):
-        ds = ( ds.expand_dims( ESTADISTICA = 1 ).rename_dims(
-            { "XTIME": "MES", "XLAT": "south_north",
-            "XLONG": "west_east" } ).rename_vars( { "XLAT": "LATITUD",
-            "XLONG": "LONGITUD", "XTIME": "MES", "Pcp": "PRECIPITACION" }
+        ds = ( ds.expand_dims( ESTADISTICA = 1
+            ).rename( {"XTIME": "MES", "Pcp": "PRECIPITACION",
+            #"XLAT": "south_north", "XLONG": "west_east" 
+            "XLAT": "LATITUD", "XLONG": "LONGITUD"}
             ).drop_vars( ["XTIME_bnds"] ) )
         return ds
 
@@ -24,10 +24,9 @@ if type == "WRF":
 if type == "CHIRPS":
     def pre(ds):
         ds = ( ds.expand_dims( ESTADISTICA = 1
-            ).drop( "time_bnds" ).rename_dims( { "time":"MES",
-            "latitude": "south_north", "longitude": "west_east" } 
-            ).rename_vars( { "latitude": "LATITUD", "longitude": "LONGITUD",
-            "time": "MES", "precip": "PRECIPITACION" } ) )
+            ).drop( "time_bnds" ).rename( {
+                "time":"MES", "latitude": "LATITUD",
+                "longitude": "LONGITUD", "precip": "PRECIPITACION" } ) )
         return ds
 
 # Abrimos todos los archivos.
@@ -39,13 +38,8 @@ ds["MES"] = range(1, 13)
 ds["ESTADISTICA"] = range(1, 5)
 
 # Reordenamos.
-ds = ds.to_dataframe().reorder_levels( ["south_north",
-    "west_east", "MES", "ESTADISTICA"] ).sort_index(
+ds = ds.to_dataframe().reorder_levels( ["LATITUD",
+    "LONGITUD", "MES", "ESTADISTICA"] ).sort_index(
     ).to_xarray().set_coords( ["LONGITUD", "LATITUD"] )
-
-ds["LONGITUD"] = ds["LONGITUD"].isel( {"MES": 0,
-    "ESTADISTICA": 0, "south_north": 0} )
-ds["LATITUD"]  = ds["LATITUD" ].isel( {"MES": 0,
-    "ESTADISTICA": 0, "west_east": 0} )
 
 ds.to_netcdf(fname)

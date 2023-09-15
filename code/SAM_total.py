@@ -19,12 +19,12 @@ if type == "WRF":
         # Separamos por duración, reordenamos la intensidad
         # de precipitación de cada celda de mayor a menor.
         df = ds.sel( DURACION = [i] ).to_dataframe().sort_values(
-            ["south_north", "west_east", "Pcp"],
+            ["LATITUD", "LONGITUD", "Pcp"],
             ascending = [True, True, False] )
         # Calculamos el número de orden de mayor a menor.
         df["m"] = ( list( range(1, ds["AÑO"].count().values + 1 ) )
-            * ( ds["west_east"].max().values + 1 )
-            * ( ds["south_north"].max().values + 1 ) )
+            * ( ds["LONGITUD"].count().values + 0 )
+            * ( ds["LATITUD" ].count().values + 0 ) )
 
         # Calculamos el tiempo de retorno.
         df["TIEMPO_RETORNO"] = ( ds["AÑO"].count().values + 1 ) / df["m"]
@@ -35,14 +35,11 @@ if type == "WRF":
     # Unimos todos los archivos, reordenamos y renombramos variables.
     ds = xr.concat( ds_i, dim = "DURACION" ).to_dataframe().reset_index("AÑO"
         ).set_index( "TIEMPO_RETORNO", append = True ).reorder_levels(
-        ["south_north", "west_east", "DURACION", "TIEMPO_RETORNO"]
-        ).sort_index().rename( {"XLONG":"LONGITUD", "XLAT": "LATITUD",
+        ["LATITUD", "LONGITUD", "DURACION", "TIEMPO_RETORNO"]
+        ).sort_index().rename( {
+        #"XLONG":"LONGITUD", "XLAT": "LATITUD",
         "Pcp": "INTENSIDAD"}, axis = 1 ).to_xarray(
         ).set_coords( ["LONGITUD", "LATITUD"] )
-    ds["LONGITUD"] = ds["LONGITUD"].isel( {"DURACION": 0,
-        "TIEMPO_RETORNO": 0, "south_north": 0} )
-    ds["LATITUD"] = ds["LATITUD"].isel( {"DURACION": 1,
-        "TIEMPO_RETORNO": 0, "west_east": 0} )
 
 # CHIRPS
 if type == "CHIRPS":
@@ -50,12 +47,12 @@ if type == "CHIRPS":
         # Separamos por duración, reordenamos la intensidad
         # de precipitación de cada celda de mayor a menor.
         df = ds.sel( DURACION = [i] ).to_dataframe().sort_values(
-            ["latitude", "longitude", "precip"],
+            ["LATITUD", "LONGITUD", "precip"],
             ascending = [True, True, False] )
         # Calculamos el número de orden de mayor a menor.
         df["m"] = ( list( range(1, ds["AÑO"].count().values + 1 ) )
-            * ( ds["longitude"].count().values + 0 )
-            * ( ds["latitude"].count().values + 0 ) )
+            * ( ds["LONGITUD"].count().values + 0 )
+            * ( ds["LATITUD" ].count().values + 0 ) )
     
         # Calculamos el tiempo de retorno.
         df["TIEMPO_RETORNO"] = ( ds["AÑO"].count().values + 1 ) / df["m"]
@@ -63,15 +60,9 @@ if type == "CHIRPS":
         df["PROBABILIDAD"] = 1/ df["TIEMPO_RETORNO"]
         ds_i.append( df.drop("m", axis = 1).to_xarray() )
 
-    ds = xr.concat( ds_i, dim = "DURACION" ).to_dataframe(
-        ).reset_index("AÑO"
+    ds = xr.concat( ds_i, dim = "DURACION" ).to_dataframe().reset_index( "AÑO"
         ).set_index( "TIEMPO_RETORNO", append = True ).to_xarray(
-        ).rename_vars( {"longitude": "LONGITUD", "latitude": "LATITUD",
+        ).rename_vars( {#"longitude": "LONGITUD", "latitude": "LATITUD",
         "precip": "INTENSIDAD"} ).set_coords( ["LONGITUD", "LATITUD"] )
-    
-    ds["LONGITUD"] = ds["LONGITUD"].isel( {"DURACION": 0,
-        "TIEMPO_RETORNO": 0, "south_north": 0} )
-    ds["LATITUD"]  = ds["LATITUD" ].isel( {"DURACION": 0,
-        "TIEMPO_RETORNO": 0, "west_east": 0} )
     
 ds.to_netcdf(fname)

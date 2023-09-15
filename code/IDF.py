@@ -11,13 +11,13 @@ df = xr.open_dataset( path_d ).to_dataframe()
 
 # Quitamos la intensidad, año, probabilidad, tiempo de retorno, y agregamos
 # columnas para los parámetros de la distribución.
-df = df.reorder_levels( ["south_north",
-    "west_east", "DURACION", "TIEMPO_RETORNO"] )
+df = df.reorder_levels( ["LATITUD",
+    "LONGITUD", "DURACION", "TIEMPO_RETORNO"] )
 df_2 = df.copy().drop( ["PROBABILIDAD", "AÑO"], axis = 1 
     ).reset_index( "TIEMPO_RETORNO" )
 #df_2 = df_2.reset_index( "DURACION" )
 df_3 = df_2.copy().drop( ["INTENSIDAD", "TIEMPO_RETORNO"], axis = 1).groupby(
-    ["south_north", "west_east", "DURACION"] ).mean()
+    ["LATITUD", "LONGITUD", "DURACION"] ).mean()
 cols = ["GEV_C", "GEV_LOC", "GEV_SCALE", "KTEST_P"]
 df_3[ cols ] = None
 
@@ -34,18 +34,18 @@ df_3[ cols ] = None
 #df_2["DURACION"] = d
 t = ( ( [5, 10, 25, 50, 100, 200, 500, 1000] + [None] *
     ( df_2["TIEMPO_RETORNO"].unique().shape[0] - 8 ) )
-    * df_2.index.get_level_values("west_east").unique().shape[0]
-    * df_2.index.get_level_values("south_north").unique().shape[0]
+    * df_2.index.get_level_values("LONGITUD").unique().shape[0]
+    * df_2.index.get_level_values("LATITUD").unique().shape[0]
     * df_2.index.get_level_values("DURACION").unique().shape[0] )
 df_2["TIEMPO_RETORNO"] = t
 df_2 = df_2.dropna().set_index( "TIEMPO_RETORNO", append = True )
 #df_2 = df_2.set_index("DURACION", append = True).sort_values(
-#    ["south_north", "west_east", "DURACION", "TIEMPO_RETORNO"] )
+#    ["LATITUD", "LONGITUD", "DURACION", "TIEMPO_RETORNO"] )
 
 # Iteramos para cada celda y duración.
-for i in df_3.index.get_level_values("south_north").unique():
-    print(f"Calculando coordenada y #{i}...")
-    for j in df_3.index.get_level_values("west_east").unique():
+for i in df_3.index.get_level_values("LATITUD").unique():
+    print(f"Calculando coordenada {i:.3f}°N...")
+    for j in df_3.index.get_level_values("LONGITUD").unique():
         for k in df_3.index.get_level_values("DURACION").unique():
             # ajustamos la distribución de valores extremos.
             params = stats.genextreme.fit( df.loc[ (i, j, k), "INTENSIDAD" ] )
@@ -61,14 +61,8 @@ for i in df_3.index.get_level_values("south_north").unique():
 
 # Guardamos los valores de intensidad de las curvas IDF.
 ds = df_2.to_xarray().set_coords( ["LONGITUD", "LATITUD"] )
-ds["LONGITUD"] = ds["LONGITUD"].isel( {"DURACION": 1, "TIEMPO_RETORNO": 1}
-    ).drop( ["DURACION", "TIEMPO_RETORNO"] )
-ds["LATITUD"] = ds["LATITUD"].isel( {"DURACION": 1, "TIEMPO_RETORNO": 1}
-    ).drop( ["DURACION", "TIEMPO_RETORNO"] )
 ds.to_netcdf(path_v)
 
 # Guardamos los parámetros de la distribución GEV para las curvas IDF.
 ds = df_3.to_xarray().set_coords( ["LONGITUD", "LATITUD"] )
-ds["LONGITUD"] = ds["LONGITUD"].isel( {"DURACION": 1} ).drop( ["DURACION"] )
-ds["LATITUD"]  = ds["LATITUD"].isel(  {"DURACION": 1} ).drop( ["DURACION"] )
 ds.to_netcdf(path_g)

@@ -26,6 +26,12 @@ input="temp/$name.nc"
 #input="data/$name.nc"
 
 mkdir -p "results/"${name%.*}
+mkdir -p "results/"${name%.*}"/Mapas"
+mkdir -p "results/"${name%.*}"/Mapas/QGZ"
+mkdir -p "results/"${name%.*}"/Mapas/SHP"
+mkdir -p "results/"${name%.*}"/Mapas/TIF"
+mkdir -p "results/"${name%.*}"/Mapas/PDF"
+
 curva_masa="temp/SAM/$name.nc"
 output_1="results/"${name%.*}"/$name""_tretorno.nc"
 output_2="results/"${name%.*}"/$name""_idf_gev.nc"

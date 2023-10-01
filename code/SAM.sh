@@ -5,20 +5,20 @@ set -e
 yes | rm -f temp/SAM/*
 
 # Tipo de archivo a procesar
-p="horas"
-#p="dias"
+#p="horas"
+p="dias"
 
 # Nombre del archivo a procesar.
 
 # WRF
-t="WRF"
+#t="WRF"
 #name="prec_hist_hist"
-name="prec_hist_comp_estaciones"
+#name="prec_hist_comp_estaciones"
 #name="prec_hist_comp_CHIRPS"
 
 # CHIRPS
-#t="CHIRPS"
-#name="CHIRPS_comp"
+t="CHIRPS"
+name="CHIRPS_comp"
 #name="CHIRPS_megalopolis"
 
 # Ubicación del archivo a procesar.

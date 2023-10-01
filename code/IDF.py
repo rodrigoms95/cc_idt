@@ -44,9 +44,11 @@ df_2 = df_2.dropna().set_index( "TIEMPO_RETORNO", append = True )
 
 # Iteramos para cada celda y duración.
 for i in df_3.index.get_level_values("LATITUD").unique():
-    print(f"Calculando coordenada {i:.3f}°N...")
+    print(f"\nCalculando coordenada {i:.3f}°N...")
     for j in df_3.index.get_level_values("LONGITUD").unique():
+        print(f"Calculando coordenada {j:.3f}°W...")
         for k in df_3.index.get_level_values("DURACION").unique():
+            print(f"Calculando duración {k}...")
             # ajustamos la distribución de valores extremos.
             params = stats.genextreme.fit( df.loc[ (i, j, k), "INTENSIDAD" ] )
             # Hacemos la prueba Kolmogorov Smirnoff.
@@ -58,6 +60,7 @@ for i in df_3.index.get_level_values("LATITUD").unique():
                 *df_3.loc[ (i, j, k), cols[:-1] ] ).isf(
                 1 / df_2.loc[ (i, j, k) ].index.get_level_values(
                 "TIEMPO_RETORNO") )
+            print(f"pvalue: {pvalue:.3f}")
 
 # Guardamos los valores de intensidad de las curvas IDF.
 ds = df_2.to_xarray().set_coords( ["LONGITUD", "LATITUD"] )

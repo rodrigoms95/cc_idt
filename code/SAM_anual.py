@@ -28,7 +28,9 @@ if type == "WRF":
         # precipitación, obtenemos el máximo de intensidad anual y agregamos
         # dimensiones de duración.
         ds_i.append( ( 
-            ( ds - ds.shift( XTIME = i ) ) / i ).max( dim = "XTIME"
+            ( ds - ds.shift( XTIME = i ) )
+            #/ i
+            ).max( dim = "XTIME"
             ).assign_coords( coords = {"DURACION": i}
             ).expand_dims( dim = "DURACION" ) )
 
@@ -47,7 +49,9 @@ if type == "CHIRPS":
         # precipitación, obtenemos el máximo de intensidad anual y agregamos
         # dimensiones de duración.
         ds_i.append( ( 
-            ( ds - ds.shift( time = i ) ) / i  ).max( dim = "time"
+            ( ds - ds.shift( time = i ) )
+            #/ i
+            ).max( dim = "time"
             ).assign_coords( coords = {"DURACION": i}
             ).expand_dims( dim = "DURACION" ) )
     

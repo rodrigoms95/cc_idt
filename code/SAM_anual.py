@@ -14,10 +14,12 @@ ds_i = []
 
 # Repetimos para cada duración
 if period == "horas":
-    dur = [ 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24,
-        30, 36, 42, 48, 60, 72, 84, 96, 108, 120 ]
+    dur = [ int(x) for x in [ 1, 2, 3, 4, 5, 6, 8, 10, 12,
+        16, 20, 1*24,  1.25*24, 1.5*24, 1.75*24, 2*24, 2.5*24,
+        3*24, 3.5*24, 4*24, 4.5*24, 5*24, 6*24, 7*24, 8*24,
+        9*24, 10*24, 15*24, 20*24, 30*24, 40*24, 50*24, 60*24 ] ]
 if period == "dias":
-    dur = [ 1, 2, 3, 4, 5 ]
+    dur = [ 1, 2, 3, 4, 5, 10, 15, 20, 30, 40, 50, 60 ]
 
 # WRF
 if type == "WRF":
@@ -28,8 +30,7 @@ if type == "WRF":
         # precipitación, obtenemos el máximo de intensidad anual y agregamos
         # dimensiones de duración.
         ds_i.append( ( 
-            ( ds - ds.shift( XTIME = i ) )
-            #/ i
+            ( ds - ds.shift( XTIME = i ) ) / i
             ).max( dim = "XTIME"
             ).assign_coords( coords = {"DURACION": i}
             ).expand_dims( dim = "DURACION" ) )
@@ -37,7 +38,7 @@ if type == "WRF":
     # Unimos todas las duraciones.
     ds = xr.concat( ds_i, dim = "DURACION"
         ).rename( { "XLAT": "LATITUD", "XLONG": "LONGITUD" } 
-        ).drop_vars("XTIME_bnds"
+        #).drop_vars("XTIME_bnds"
         )
 
 # CHIRPS
@@ -49,8 +50,7 @@ if type == "CHIRPS":
         # precipitación, obtenemos el máximo de intensidad anual y agregamos
         # dimensiones de duración.
         ds_i.append( ( 
-            ( ds - ds.shift( time = i ) )
-            #/ i
+            ( ds - ds.shift( time = i ) ) / i
             ).max( dim = "time"
             ).assign_coords( coords = {"DURACION": i}
             ).expand_dims( dim = "DURACION" ) )

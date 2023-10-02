@@ -5,25 +5,29 @@ set -e
 yes | rm -f temp/SAM/*
 
 # Tipo de archivo a procesar
-#p="horas"
-p="dias"
+p="horas"
+#p="dias"
 
 # Nombre del archivo a procesar.
 
+# Todos los datos de la corrida.
+w="Y"
+w="N"
+
 # WRF
-#t="WRF"
-#name="prec_hist_hist"
+t="WRF"
+name="prec_hist_hist"
 #name="prec_hist_comp_estaciones"
 #name="prec_hist_comp_CHIRPS"
 
 # CHIRPS
-t="CHIRPS"
-name="CHIRPS_comp"
+#t="CHIRPS"
+#name="CHIRPS_comp"
 #name="CHIRPS_megalopolis"
 
 # Ubicación del archivo a procesar.
-input="temp/$name.nc"
-#input="data/$name.nc"
+#input="temp/$name.nc"
+input="data/$name.nc"
 
 mkdir -p "results/"${name%.*}
 mkdir -p "results/"${name%.*}"/Mapas"
@@ -34,7 +38,7 @@ mkdir -p "results/"${name%.*}"/Mapas/PDF"
 
 curva_masa="temp/SAM/$name.nc"
 output_1="results/"${name%.*}"/$name""_tretorno.nc"
-output_2="results/"${name%.*}"/$name""_idf_gev.nc"
+output_2="results/"${name%.*}"/$name""_idf_parametros.nc"
 output_3="results/"${name%.*}"/$name""_idf_valores.nc"
 mean_1="temp/SAM/$name""_stats"
 mean_2="results/"${name%.*}"/$name""_stats.nc"
@@ -50,7 +54,7 @@ cdo -s ymonmax   $mean_1".nc"   $mean_1"_2.nc"
 cdo -s ymonmean  $mean_1".nc"   $mean_1"_3.nc"
 cdo -s ymonstd   $mean_1".nc"   $mean_1"_4.nc"
 yes | rm $mean_1".nc"
-python code/mean.py $mean_2 $t
+python code/mean.py $mean_2 $t $w
 yes | rm temp/SAM/*
 echo "Precipitación media mensual calculada."
 echo

@@ -1,8 +1,15 @@
 # Hace un ajuste a la distribución generalizada de valores extremos
 # para derivar parámetros para el cálculo de las curvas IDF.
 import sys
+import warnings
+import itertools
+import numpy as np
+import pandas as pd
 import xarray as xr
-from scipy import stats
+from scipy import optimize
+
+warnings.filterwarnings( "ignore", category = RuntimeWarning )
+warnings.filterwarnings( "ignore", category = pd.errors.PerformanceWarning )
 
 path_d = sys.argv[1]
 path_g = sys.argv[2]
@@ -15,55 +22,58 @@ df = df.reorder_levels( ["LATITUD",
     "LONGITUD", "DURACION", "TIEMPO_RETORNO"] )
 df_2 = df.copy().drop( ["PROBABILIDAD", "AÑO"], axis = 1 
     ).reset_index( "TIEMPO_RETORNO" )
-#df_2 = df_2.reset_index( "DURACION" )
-df_3 = df_2.copy().drop( ["INTENSIDAD", "TIEMPO_RETORNO"], axis = 1).groupby(
-    ["LATITUD", "LONGITUD", "DURACION"] ).mean()
-cols = ["GEV_C", "GEV_LOC", "GEV_SCALE", "KTEST_P"]
+df_2 = df_2.reset_index( "DURACION" )
+df_3 = df_2.copy().drop( ["INTENSIDAD", "TIEMPO_RETORNO", "DURACION"],
+    axis = 1 ).groupby( ["LATITUD", "LONGITUD"] ).mean()
+cols = ["k", "m", "n", "c", "error"]
 df_3[ cols ] = None
 
-# Ajustamos las duraciones y tiempos de retorno a calcular.
-# Por el momento no se ajusta la duración ya que el método GEV solo permite
-# calcular para las duraciones que se tienen parámetros, un método empírico
-# como el de Aparicio, Chen, o Chow permiten interpolar fácilmente las
-# duraciones.
-#d = ( [ 5/60, 10/60, 15/60, 20/60, 30/60, 40/60, 1, 1.5, 2, 2.5,
-#    3, 3.5, 4, 5, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24 ]
-#    * df_2.index.get_level_values("west_east").unique()
-#    * df_2.index.get_level_values("south_north").unique()
-#    * df_2.index.get_level_values("TIEMPO_RETORNO"").unique() ) )
-#df_2["DURACION"] = d
-t = ( ( [5, 10, 25, 50, 100, 200, 500, 1000] + [None] *
-    ( df_2["TIEMPO_RETORNO"].unique().shape[0] - 8 ) )
-    * df_2.index.get_level_values("LONGITUD").unique().shape[0]
-    * df_2.index.get_level_values("LATITUD").unique().shape[0]
-    * df_2.index.get_level_values("DURACION").unique().shape[0] )
-df_2["TIEMPO_RETORNO"] = t
-df_2 = df_2.dropna().set_index( "TIEMPO_RETORNO", append = True )
-#df_2 = df_2.set_index("DURACION", append = True).sort_values(
-#    ["LATITUD", "LONGITUD", "DURACION", "TIEMPO_RETORNO"] )
+# Creamos la tabla a predecir.
+d_l = [ 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5 ]
+t_l = [5, 10, 25, 50, 100, 200, 500, 1000]
+d_l = [ 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5 ]
+t_l = [5, 10, 25, 50, 100, 200, 500, 1000]
+df_2 = pd.DataFrame( np.array( list( itertools.product(
+    df_2.index.get_level_values("LATITUD").unique(), 
+    df_2.index.get_level_values("LONGITUD").unique(), d_l, t_l) ) ),
+    columns = ["LATITUD", "LONGITUD", "DURACION", "TIEMPO_RETORNO"] )
+df_2["INTENSIDAD"] = None
+df_2 = df_2.set_index( ["LATITUD", "LONGITUD", "DURACION", "TIEMPO_RETORNO"] )
+
+# Función que nos genera una curva idT.
+def idT(X, k, m, n, d):
+    return ( k * X[0] ** m ) / ( X[1] + d ) ** n
 
 # Iteramos para cada celda y duración.
 for i in df_3.index.get_level_values("LATITUD").unique():
-    print(f"\nCalculando coordenada {i:.3f}°N...")
+    print(f"Calculando coordenada {i:.3f}°N...")
     for j in df_3.index.get_level_values("LONGITUD").unique():
-        print(f"Calculando coordenada {j:.3f}°W...")
-        for k in df_3.index.get_level_values("DURACION").unique():
-            print(f"Calculando duración {k}...")
-            # ajustamos la distribución de valores extremos.
-            params = stats.genextreme.fit( df.loc[ (i, j, k), "INTENSIDAD" ] )
-            # Hacemos la prueba Kolmogorov Smirnoff.
-            pvalue = stats.kstest( df.loc[ (i, j, k), "INTENSIDAD" ],
-                stats.genextreme(*params).cdf ).pvalue
-            df_3.loc[ (i, j, k), cols ] = [*params] + [pvalue]
-            # Calculamos las intensidades de acuerdo con la distribución.
-            df_2.loc[ (i, j, k), "INTENSIDAD"] = stats.genextreme(
-                *df_3.loc[ (i, j, k), cols[:-1] ] ).isf(
-                1 / df_2.loc[ (i, j, k) ].index.get_level_values(
-                "TIEMPO_RETORNO") )
-            print(f"pvalue: {pvalue:.3f}")
+        # Método de Wenzel con mínimos cuadrados no lineales.
+
+        # Mínimos cuadrados no lineales.
+        df_4 = df.loc[ (i, j), "INTENSIDAD" ].reset_index()
+        # Predictando.
+        Y = df_4["INTENSIDAD"].values
+        # Predictores.
+        X = np.swapaxes( df_4[ ["TIEMPO_RETORNO", "DURACION"] ].values, 0, 1 )
+        # Cálculo de parámetros.
+        fit = optimize.curve_fit( f = idT, xdata = X, ydata = Y,
+            p0 = (1, 1, 1, 1), full_output = True )
+
+        # Coeficientes de las curvas idT.
+        df_3.loc[ (i, j), cols[:-1] ] = fit[0]
+        # Error.
+        df_3.loc[ (i, j), cols[-1] ] = ( fit[2]["fvec"] ** 2 ).sum()
+
+        # Calculamos las intensidades.
+        X = np.swapaxes( df_2.loc[ (i, j) ].reset_index()[
+            ["TIEMPO_RETORNO", "DURACION"] ].values, 0, 1 )
+        df_2.loc[ (i, j), "INTENSIDAD"] = idT(
+            X, *df_3.loc[ (i, j) ].iloc[0:4] )
 
 # Guardamos los valores de intensidad de las curvas IDF.
-ds = df_2.to_xarray().set_coords( ["LONGITUD", "LATITUD"] )
+ds = df_2.reorder_levels( ["LATITUD", "LONGITUD", "DURACION",
+    "TIEMPO_RETORNO"] ).to_xarray().set_coords( ["LONGITUD", "LATITUD"] )
 ds.to_netcdf(path_v)
 
 # Guardamos los parámetros de la distribución GEV para las curvas IDF.

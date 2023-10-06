@@ -16,7 +16,6 @@ if type == "WRF":
     def pre(ds):
         ds = ( ds.expand_dims( ESTADISTICA = 1
             ).rename( {"XTIME": "MES", "Pcp": "PRECIPITACION",
-            #"XLAT": "south_north", "XLONG": "west_east" 
             "XLAT": "LATITUD", "XLONG": "LONGITUD"}
             ).drop_vars( ["XTIME_bnds"] ) )
         return ds
@@ -45,7 +44,6 @@ ds["MES"] = range(1, 13)
 ds["ESTADISTICA"] = range(1, 5)
 
 # Reordenamos.
-print(ds)
 ds = ds.to_dataframe().reorder_levels( ["LATITUD",
     "LONGITUD", "MES", "ESTADISTICA"] ).sort_index(
     ).to_xarray().set_coords( ["LONGITUD", "LATITUD"] )

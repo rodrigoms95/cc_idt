@@ -12,7 +12,7 @@ p="horas"
 
 # Todos los datos de la corrida.
 w="Y"
-w="N"
+#w="N"
 
 # WRF
 t="WRF"

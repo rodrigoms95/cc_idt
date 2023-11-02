@@ -31,8 +31,6 @@ df_3[ cols ] = None
 # Creamos la tabla a predecir.
 d_l = [ 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5 ]
 t_l = [5, 10, 25, 50, 100, 200, 500, 1000]
-d_l = [ 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5 ]
-t_l = [5, 10, 25, 50, 100, 200, 500, 1000]
 df_2 = pd.DataFrame( np.array( list( itertools.product(
     df_2.index.get_level_values("LATITUD").unique(), 
     df_2.index.get_level_values("LONGITUD").unique(), d_l, t_l) ) ),

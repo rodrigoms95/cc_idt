@@ -7,11 +7,18 @@ import xarray as xr
 fname  = sys.argv[1]
 type   = sys.argv[2]
 period = sys.argv[3]
+format = sys.argv[4]
 path = "temp/SAM/*nc"
 ds = xr.open_mfdataset( path, parallel = True )
 
 # Iteramos para todas las duraciones.
 ds_i = []
+
+# Tenemos el archivo completo de WRF que hay que ajustar.
+if format == "Y":
+    ds["LONGITUD"] = ds["LONGITUD"].isel(south_north = 0)
+    ds["LATITUD"] = ds["LATITUD"].isel(west_east = 0)
+    ds = ds.swap_dims( {"west_east": "LONGITUD", "south_north": "LATITUD"} )
 
 # WRF
 if type == "WRF":
@@ -21,6 +28,7 @@ if type == "WRF":
         df = ds.sel( DURACION = [i] ).to_dataframe().sort_values(
             ["LATITUD", "LONGITUD", "Pcp"],
             ascending = [True, True, False] )
+
         # Calculamos el número de orden de mayor a menor.
         df["m"] = ( list( range(1, ds["AÑO"].count().values + 1 ) )
             * ( ds["LONGITUD"].count().values + 0 )
@@ -40,7 +48,7 @@ if type == "WRF":
         #"XLONG":"LONGITUD", "XLAT": "LATITUD",
         "Pcp": "INTENSIDAD"}, axis = 1 ).to_xarray(
         ).set_coords( ["LONGITUD", "LATITUD"] )
-
+    
 # CHIRPS
 if type == "CHIRPS":
     for i in ds["DURACION"].values:

@@ -93,7 +93,7 @@ echo
 
 # Corremos el script para unir todos los datos, calcular los tiempos de retorno y las probabilidades de excedencia.
 echo "Uniendo todos los datos, calculando tiempos de retorno y probabilidades de excedencia..."
-python code/SAM_total.py $output_1 $t $p
+python code/SAM_total.py $output_1 $t $p $w
 yes | rm temp/SAM/*
 echo "Tiempo de retorno calculado."
 

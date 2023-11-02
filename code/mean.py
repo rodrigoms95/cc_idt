@@ -33,7 +33,7 @@ if type == "CHIRPS":
 ds = xr.open_mfdataset( path, combine = "nested", 
     concat_dim = "ESTADISTICA", parallel = True, preprocess = pre )
 
-# Solo para la corrida completa de WRf.
+# Solo para la corrida completa de WRF.
 if tot == "Y":
     ds["LATITUD" ] = ds["LATITUD" ].isel( {"west_east"  : 0} )
     ds["LONGITUD"] = ds["LONGITUD"].isel( {"south_north": 0} )

@@ -37,9 +37,9 @@ if type == "WRF":
 
     # Unimos todas las duraciones.
     ds = xr.concat( ds_i, dim = "DURACION"
-        ).rename( { "XLAT": "LATITUD", "XLONG": "LONGITUD" } 
-        #).drop_vars("XTIME_bnds"
-        )
+        ).rename( { "XLAT": "LATITUD", "XLONG": "LONGITUD" } )
+    
+    if period == "dias": ds = ds.drop_vars("XTIME_bnds")
 
 # CHIRPS
 if type == "CHIRPS":

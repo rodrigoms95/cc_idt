@@ -5,29 +5,29 @@ set -e
 yes | rm -f temp/SAM/*
 
 # Tipo de archivo a procesar
-p="horas"
-#p="dias"
+#p="horas"
+p="dias"
 
 # Nombre del archivo a procesar.
 
 # Todos los datos de la corrida.
-w="Y"
-#w="N"
+#w="Y"
+w="N"
 
 # WRF
-t="WRF"
-name="prec_hist_hist"
+#t="WRF"
+#name="prec_hist_hist"
 #name="prec_hist_comp_estaciones"
-#name="prec_hist_comp_CHIRPS"
+#name="prec_hist_hist_days"
 
 # CHIRPS
-#t="CHIRPS"
-#name="CHIRPS_comp"
+t="CHIRPS"
+name="CHIRPS_interp_WRF"
 #name="CHIRPS_megalopolis"
 
 # Ubicación del archivo a procesar.
-#input="temp/$name.nc"
-input="data/$name.nc"
+input="temp/$name.nc"
+#input="data/$name.nc"
 
 mkdir -p "results/"${name%.*}
 mkdir -p "results/"${name%.*}"/Mapas"

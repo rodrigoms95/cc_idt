@@ -11,18 +11,21 @@ p="dias"
 # Nombre del archivo a procesar.
 
 # Todos los datos de la corrida.
-#w="Y"
-w="N"
+w="Y"
+#w="N"
 
 # WRF
-#t="WRF"
-#name="prec_hist_hist"
+t="WRF"
+#name="prec_era5_hist_hist"
 #name="prec_hist_comp_estaciones"
-#name="prec_hist_hist_days"
+#name="prec_era5_hist_hist_days"
+#name="prec_mroc_hist_hist"
+name="prec_mroc_hist_hist_days"
+#name="prec_mroc_2040_2040"
 
 # CHIRPS
-t="CHIRPS"
-name="CHIRPS_interp_WRF"
+#t="CHIRPS"
+#name="CHIRPS_interp_WRF"
 #name="CHIRPS_megalopolis"
 
 # Ubicación del archivo a procesar.
@@ -99,7 +102,7 @@ echo "Tiempo de retorno calculado."
 
 echo
 echo "Calculando curvas IDF..."
-python code/IDF.py $output_1 $output_2 $output_3
+python code/IDF.py $output_1 $output_2 $output_3 $p
 echo "Curvas IDF calculadas."
 
 echo

@@ -20,8 +20,6 @@ if format == "Y":
     ds["LATITUD"] = ds["LATITUD"].isel(west_east = 0)
     ds = ds.swap_dims( {"west_east": "LONGITUD", "south_north": "LATITUD"} )
 
-print(ds)
-
 # WRF
 if type == "WRF":
     for i in ds["DURACION"].values:

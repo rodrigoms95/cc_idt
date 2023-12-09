@@ -5,8 +5,8 @@ set -e
 yes | rm -f temp/SAM/*
 
 # Tipo de archivo a procesar
-#p="horas"
-p="dias"
+p="horas"
+#p="dias"
 
 # Nombre del archivo a procesar.
 
@@ -20,8 +20,9 @@ t="WRF"
 #name="prec_hist_comp_estaciones"
 #name="prec_era5_hist_hist_days"
 #name="prec_mroc_hist_hist"
-name="prec_mroc_hist_hist_days"
-#name="prec_mroc_2040_2040"
+#name="prec_mroc_h20a_hist"
+#name="prec_mroc_hist_hist_days"
+name="prec_mroc_2040_2040"
 
 # CHIRPS
 #t="CHIRPS"
@@ -29,8 +30,8 @@ name="prec_mroc_hist_hist_days"
 #name="CHIRPS_megalopolis"
 
 # Ubicación del archivo a procesar.
-input="temp/$name.nc"
-#input="data/$name.nc"
+#input="temp/$name.nc"
+input="data/$name.nc"
 
 mkdir -p "results/"${name%.*}
 mkdir -p "results/"${name%.*}"/Mapas"

@@ -26,7 +26,7 @@ if type == "WRF":
         # Separamos por duración, reordenamos la intensidad
         # de precipitación de cada celda de mayor a menor.
         df = ds.sel( DURACION = [i] ).to_dataframe().sort_values(
-            ["LATITUD", "LONGITUD", "Pcp"],
+            ["LONGITUD", "LATITUD", "Pcp"],
             ascending = [True, True, False] )
 
         # Calculamos el número de orden de mayor a menor.
@@ -43,7 +43,7 @@ if type == "WRF":
     # Unimos todos los archivos, reordenamos y renombramos variables.
     ds = xr.concat( ds_i, dim = "DURACION" ).to_dataframe().reset_index("AÑO"
         ).set_index( "TIEMPO_RETORNO", append = True ).reorder_levels(
-        ["LATITUD", "LONGITUD", "DURACION", "TIEMPO_RETORNO"]
+        ["LONGITUD", "LATITUD", "DURACION", "TIEMPO_RETORNO"]
         ).sort_index().rename( {
         #"XLONG":"LONGITUD", "XLAT": "LATITUD",
         "Pcp": "INTENSIDAD"}, axis = 1 ).to_xarray(
@@ -55,7 +55,7 @@ if type == "CHIRPS":
         # Separamos por duración, reordenamos la intensidad
         # de precipitación de cada celda de mayor a menor.
         df = ds.sel( DURACION = [i] ).to_dataframe().sort_values(
-            ["LATITUD", "LONGITUD", "precip"],
+            ["LONGITUD", "LATITUD", "precip"],
             ascending = [True, True, False] )
         # Calculamos el número de orden de mayor a menor.
         df["m"] = ( list( range(1, ds["AÑO"].count().values + 1 ) )

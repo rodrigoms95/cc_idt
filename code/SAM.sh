@@ -11,8 +11,8 @@ p="horas"
 # Nombre del archivo a procesar.
 
 # Todos los datos de la corrida.
-w="Y"
-#w="N"
+#w="Y"
+w="N"
 
 # WRF
 t="WRF"
@@ -22,7 +22,9 @@ t="WRF"
 #name="prec_mroc_hist_hist"
 #name="prec_mroc_h20a_hist"
 #name="prec_mroc_hist_hist_days"
-name="prec_mroc_2040_2040"
+#name="prec_mroc_2040_2040"
+name="prec_mroc_2040_2040_coarsen_5"
+#name="prec_mroc_h20a_hist_coarsen_10"
 
 # CHIRPS
 #t="CHIRPS"
@@ -30,8 +32,8 @@ name="prec_mroc_2040_2040"
 #name="CHIRPS_megalopolis"
 
 # Ubicación del archivo a procesar.
-#input="temp/$name.nc"
-input="data/$name.nc"
+input="temp/$name.nc"
+#input="data/$name.nc"
 
 mkdir -p "results/"${name%.*}
 mkdir -p "results/"${name%.*}"/Mapas"

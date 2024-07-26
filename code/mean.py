@@ -17,7 +17,8 @@ if type == "WRF":
         ds = ( ds.expand_dims( ESTADISTICA = 1
             ).rename( {"XTIME": "MES", "Pcp": "PRECIPITACION",
             "XLAT": "LATITUD", "XLONG": "LONGITUD"}
-            ).drop_vars( ["XTIME_bnds"] ) )
+            ).drop_vars( ["XTIME_bnds"] )
+            )
         return ds
 
 # CHIRPS

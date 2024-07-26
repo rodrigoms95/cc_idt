@@ -23,8 +23,10 @@ t="WRF"
 #name="prec_mroc_h20a_hist"
 #name="prec_mroc_hist_hist_days"
 #name="prec_mroc_2040_2040"
-name="prec_mroc_2040_2040_coarsen_5"
+#name="prec_mroc_2040_2040_coarsen_5"
 #name="prec_mroc_h20a_hist_coarsen_10"
+#name="WRF_regrid_CHIRPS_days_qmap"
+name="WRF_2040_regrid_CHIRPS_days_qmap"
 
 # CHIRPS
 #t="CHIRPS"

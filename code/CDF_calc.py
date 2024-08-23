@@ -18,6 +18,8 @@ dims = [ "XTIME", "XLAT", "XLONG" ]
 # 1 actual CHIRPS
 # 2 futuro CHIRPS
 # 3 observado ERA 5
+# 4 actual ERA 5
+# 5 futuro ERA 5
 model = sys.argv[1]
 if model == "0":
     path_d = "../data/CHIRPS_megalopolis.nc"
@@ -31,6 +33,12 @@ elif model == "2":
 elif model == "3":
     path_d = "../../Datos/era5-land/era5-land_total-precipitation.nc"
     path_r = "../../temp/cc_idt/era5-land_total-precipitation_cdf.nc"
+elif model == "4":
+    path_d = "../../temp/cc_idt/WRF_regrid_ERA5_1985_2014.nc"
+    path_r = "../../temp/cc_idt/WRF_regrid_ERA5_1985_2014_cdf.nc"
+elif model == "5":
+    path_d = "../../temp/cc_idt/WRF_regrid_ERA5_2040_2059.nc"
+    path_r = "../../temp/cc_idt/WRF_regrid_ERA5_2040_2059_cdf.nc"
 
 # Abrimos el archivo
 with xr.open_dataset(path_d) as ds:
@@ -38,11 +46,11 @@ with xr.open_dataset(path_d) as ds:
     if model == "0":
         ds = ds.rename( {"time": "XTIME", "longitude": "XLONG", 
             "latitude": "XLAT", "precip": "Pcp"})
-    elif model == "3": 
-        ds = ds.rename_vars( { list(ds.keys())[0]: v,
-            "time": dims[0], "lat": dims[1], "lon": dims[2] }
-            ).swap_dims( { "time": dims[0], "lat": dims[1], "lon": dims[2] } )
-
+    elif model in ["3"]: 
+        ds = ds.rename_dims( { "time": dims[0], "lat": dims[1],
+            "lon": dims[2] } ).rename_vars( { list(ds.keys())[0]: v,
+            "time": dims[0], "lat": dims[1], "lon": dims[2] } )
+    
     # Reordenamos variables
     ds = ds[dims + [v]]
     # Creamos un dataset sin la variable
@@ -56,6 +64,7 @@ with xr.open_dataset(path_d) as ds:
 
     # Obtenemos la curva de distribución acumulada para cada celda
     df["q_model"] = 0.0
+    print(ds)
     for lat in latitude:
         print(f"Procesando coordenadas {lat}°N...")
         for lon in longitude:
@@ -69,6 +78,7 @@ with xr.open_dataset(path_d) as ds:
     # Covertimos a dataset
     ds["q_model"] = ( dims, df["q_model"].to_xarray().values )
     #ds_2["q_model"] = df["q_model"].to_xarray()
-   # ds["q_model"] = ( dims, ds_2["q_model"].values )
+    #ds["q_model"] = ( dims, ds_2["q_model"].values )
     # Guardamos el archivo.
     ds.to_netcdf( path_r, mode = "w" )
+    print(ds)

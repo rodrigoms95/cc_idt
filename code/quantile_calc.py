@@ -1,5 +1,6 @@
 # Corrección de cuantiles empírica.
 
+import sys
 import numpy as np
 import pandas as pd
 
@@ -8,7 +9,7 @@ import xarray as xr
 v = "Pcp"
 dims = ["XTIME", "XLAT", "XLONG"]
 
-i = 1
+i = sys.argv[1]
 path_d    = f"../../temp/cc_idt/era5-land_total-precipitation_cdf_0000{i}.nc"
 path_m    = f"../../temp/cc_idt/WRF_regrid_ERA5_1985_2014_cdf_0000{i}.nc"
 path_f    = f"../../temp/cc_idt/WRF_regrid_ERA5_2040_2059_cdf_0000{i}.nc"
@@ -18,13 +19,14 @@ path_fmap = f"../../temp/WRF_regrid_ERA5_2040_2059_qmap_0000{i}.nc"
 
 sum = True
 
-with xr.open_dataset(path_m) as ds_m:
-    with xr.open_dataset(path_d) as ds_d:
+with xr.open_dataset(path_d) as ds_d:
+    with xr.open_dataset(path_m) as ds_m:
         with xr.open_dataset(path_f) as ds_f:
 
-            df_d = ds_d.to_dataframe().sort_index()
-            df_m = ds_m.to_dataframe().sort_index()
-            df_f = ds_f.to_dataframe().sort_index()
+            df_d = ds_d.to_dataframe().reorder_levels(dims).sort_index()
+            df_m = ds_m.to_dataframe().reorder_levels(dims).sort_index()
+            df_f = ds_f.to_dataframe().reorder_levels(dims).sort_index()
+
             df_f["map"] = None
             df_m["map"] = None
             df_m["diff_sum"] = None

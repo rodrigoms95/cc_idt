@@ -4,35 +4,28 @@ import sys
 import pandas as pd
 import xarray as xr
 
-path  = "temp/SAM/*.nc"
 fname = sys.argv[1]
-type  = sys.argv[2]
-tot   = sys.argv[3]
+tot   = sys.argv[2]
+path  = f"{sys.argv[3]}*.nc"
 
 # Preprocesamiento de cada archivo.
-
-# WRF
-if type == "WRF":
-    def pre(ds):
-        ds = ( ds.expand_dims( ESTADISTICA = 1
-            ).rename( {"XTIME": "MES", "Pcp": "PRECIPITACION",
-            "XLAT": "LATITUD", "XLONG": "LONGITUD"}
-            ).drop_vars( ["XTIME_bnds"] )
-            )
-        return ds
-
-# CHIRPS
-if type == "CHIRPS":
-    def pre(ds):
-        ds = ( ds.expand_dims( ESTADISTICA = 1
-            ).drop( "time_bnds" ).rename( {
-                "time":"MES", "latitude": "LATITUD",
-                "longitude": "LONGITUD", "precip": "PRECIPITACION" } ) )
-        return ds
+def pre(ds):
+    ds = ds.expand_dims( ESTADISTICA = 1 )
+    return ds
 
 # Abrimos todos los archivos.
 ds = xr.open_mfdataset( path, combine = "nested", 
     concat_dim = "ESTADISTICA", parallel = True, preprocess = pre )
+for v in ["XTIME_bnds", "time_bnds"]:
+    if v in list(ds.keys()): ds = ds.drop_vars(v)
+for v in ["Pcp", "precip", "var228"]:
+    if v in list(ds.keys()): ds = ds.rename_vars({v: "PRECIPITACION"})
+for v in ["XTIME", "time"]:
+    if v in ds["PRECIPITACION"].dims: ds = ds.rename({v: "MES"})
+for v in ["XLAT", "latitude", "lat"]:
+    if v in ds["PRECIPITACION"].dims: ds = ds.rename({v: "LATITUD"})
+for v in ["XLONG", "longitude", "lon"]:
+    if v in ds["PRECIPITACION"].dims: ds = ds.rename({v: "LONGITUD"})
 
 # Solo para la corrida completa de WRF.
 if tot == "Y":

@@ -19,8 +19,7 @@ df = xr.open_dataset( path_d ).to_dataframe()
 
 # Quitamos la intensidad, año, probabilidad, tiempo de retorno, y agregamos
 # columnas para los parámetros de la distribución.
-df = df.reorder_levels( ["LONGITUD", "LATITUD",
-    "DURACION", "TIEMPO_RETORNO"] )
+df = df.reorder_levels( ["LONGITUD", "LATITUD", "DURACION", "TIEMPO_RETORNO"] )
 df_2 = df.copy().drop( ["PROBABILIDAD", "AÑO"], axis = 1 
     ).reset_index( "TIEMPO_RETORNO" )
 df_2 = df_2.reset_index( "DURACION" )
@@ -60,6 +59,7 @@ def idT(X, k, m, n, c):
 for i in df_3.index.get_level_values("LONGITUD").unique():
     print(f"Calculando coordenada {i:.3f}°W...")
     for j in df_3.index.get_level_values("LATITUD").unique():
+        print(f"{j:.3f}°N {i:.3f}°W")
         # Método de Wenzel con mínimos cuadrados no lineales.
 
         # Mínimos cuadrados no lineales.
@@ -70,7 +70,7 @@ for i in df_3.index.get_level_values("LONGITUD").unique():
         X = np.swapaxes( df_4[ ["TIEMPO_RETORNO", "DURACION"] ].values, 0, 1 )
         # Cálculo de parámetros.
         fit = optimize.curve_fit( f = idT, xdata = X, ydata = Y,
-            p0 = (10, 0.5, 0.5, 0.5), full_output = True, maxfev = 10000 )
+            full_output = True, maxfev = 10000 )
 
         # Coeficientes de las curvas idT.
         df_3.loc[ (i, j), cols[:-1] ] = fit[0]

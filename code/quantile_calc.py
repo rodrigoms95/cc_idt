@@ -13,9 +13,9 @@ i = sys.argv[1]
 path_d    = f"../../temp/cc_idt/era5-land_total-precipitation_cdf_0000{i}.nc"
 path_m    = f"../../temp/cc_idt/WRF_regrid_ERA5_1985_2014_cdf_0000{i}.nc"
 path_f    = f"../../temp/cc_idt/WRF_regrid_ERA5_2040_2059_cdf_0000{i}.nc"
-path_res  = f"../../temp/WRF_regrid_ERA5_1985_2014_map_0000{i}.nc"
-path_map  = f"../../temp/WRF_regrid_ERA5_1985_2014_qmap_0000{i}.nc"
-path_fmap = f"../../temp/WRF_regrid_ERA5_2040_2059_qmap_0000{i}.nc"
+path_res  = f"../../temp/cc_idt/WRF_regrid_ERA5_1985_2014_map_0000{i}.nc"
+path_map  = f"../../temp/cc_idt/WRF_regrid_ERA5_1985_2014_qmap_0000{i}.nc"
+path_fmap = f"../../temp/cc_idt/WRF_regrid_ERA5_2040_2059_qmap_0000{i}.nc"
 
 sum = True
 

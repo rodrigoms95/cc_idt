@@ -26,8 +26,8 @@ w="N"
 #name="WRF_regrid_ERA5_1985_2014"
 #name="WRF_regrid_ERA5_2040_2059"
 #name="WRF_regrid_ERA5_1985_2014_qmap"
-#name="WRF_regrid_ERA5_2040_2059_qmap"
-name="era5-land_total-precipitation"
+name="WRF_regrid_ERA5_2040_2059_qmap"
+#name="era5-land_total-precipitation"
 
 # CHIRPS
 #name="CHIRPS_interp_WRF"
@@ -35,8 +35,8 @@ name="era5-land_total-precipitation"
 
 # Ubicación del archivo a procesar.
 path="../../temp/cc_idt/SAM/"
-#input="../../temp/cc_idt/$name.nc"
-input="../../Datos/era5-land/$name.nc"
+input="../../temp/cc_idt/$name.nc"
+#input="../../Datos/era5-land/$name.nc"
 #input="data/$name.nc"
 yes | rm -rf $path"temp/"
 

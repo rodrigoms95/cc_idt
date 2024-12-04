@@ -44,6 +44,6 @@ ds = xr.concat( ds_i, dim = "DURACION" ).to_dataframe().reset_index("AÑO"
     ).sort_index().rename( {"PRECIPITACION": "INTENSIDAD"}, axis = 1
     ).to_xarray().set_coords( ["LONGITUD", "LATITUD"] )
 
-ds["INTENSIDAD"] *= 1000
+#ds["INTENSIDAD"] *= 1000
 
 ds.to_netcdf(fname)

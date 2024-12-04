@@ -1,13 +1,15 @@
 import xarray as xr
 import xesmf as xe
+import numpy as np
 
 # Cargamos el archivo de WRF.
 # Historico
-hist = False
+hist = True
+alg = "conservative"
 if hist:
     fname_in  = ( "../../Datos/WRF/Miroc6/Rain/files/"
         + "zzz_Pcp_WRF_MIROC6_198501-201412_HoraZ.nc" )
-    fname_out = "../../temp/cc_idt/WRF_regrid_ERA5_1985_2014.nc"
+    fname_out = f"../../temp/cc_idt/WRF_regrid_ERA5_1985_2014.nc"
 else:
     fname_in  = ( "../../Datos/WRF/Miroc6/Rain/files/"
         + "zzz_Pcp_WRF_MIROC6_204001-205912_HoraZ.nc" )
@@ -19,16 +21,18 @@ ds_1["XLAT"] = ds_1["XLAT"].isel(west_east = 0)
 ds_1 = ds_1.swap_dims( {"west_east": "XLONG", "south_north": "XLAT"} )
 
 # Quitamos celdas de la orilla.
-k = 1
+k = 10
 ds_1 = ds_1.isel( { "XLAT": slice(k, -k), "XLONG": slice(k, -k) } )
 
 # Cargamos el archivo de CHIRPS.
 ds_2 = xr.open_dataset(fname_grid ).rename( {"time": "XTIME",
     "lon": "XLONG", "lat": "XLAT", "var228": "Pcp"} )
+ds_2 = ds_2.sel( { "XLAT": slice(ds_1["XLAT"].max(),   ds_1["XLAT"].min()),
+           "XLONG": slice(ds_1["XLONG"].min(), ds_1["XLONG"].max()), } )
 
 # Cambiamos la resolución.
-regridder = xe.Regridder(ds_1, ds_2, "conservative")
-ds_out = regridder(ds_1, keep_attrs=True)
+regridder = xe.Regridder(ds_1, ds_2, alg)
+ds_out = regridder(ds_1, keep_attrs=True).astype(np.float32)
 
 # Guardamos el archivo.
 ds_out.to_netcdf( fname_out )

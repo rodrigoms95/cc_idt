@@ -45,9 +45,23 @@ elif model == "5":
     path_d = "../../temp/cc_idt/WRF_regrid_ERA5_2040_2059.nc"
     path_r = "../../temp/cc_idt/WRF_regrid_ERA5_2040_2059_cdf.nc"
     mult = 1
+elif model == "6":
+    path_d = "../../Datos/era5-land/era5-land_total-precipitation_days.nc"
+    path_r = "../../temp/cc_idt/era5-land_total-precipitation_days_cdf.nc"
+    mult = 1000
+elif model == "7":
+    path_d = "../../temp/cc_idt/WRF_regrid_ERA5_1985_2014_days.nc"
+    path_r = "../../temp/cc_idt/WRF_regrid_ERA5_1985_2014_days_cdf.nc"
+    mult = 1
+elif model == "8":
+    path_d = "../../temp/cc_idt/WRF_regrid_ERA5_2040_2059_days.nc"
+    path_r = "../../temp/cc_idt/WRF_regrid_ERA5_2040_2059_days_cdf.nc"
+    mult = 1
 
 # Abrimos el archivo
 with xr.open_dataset(path_d) as ds:
+
+    if model in ["6", "7", "8"]: ds = ds.drop_dims("bnds")
 
     for v in ["precip", "var228"]:
         if v in list(ds.keys()): ds = ds.rename({v: var})
@@ -79,4 +93,4 @@ with xr.open_dataset(path_d) as ds:
             df.loc[ (slice(None), lat, lon), "q_model" ] = df_c["q_model"]
 
     # Guardamos el archivo.
-    df.to_xarray().to_netcdf( path_r, mode = "w" )
+    df.to_xarray().astype(np.float32).to_netcdf(path_r)

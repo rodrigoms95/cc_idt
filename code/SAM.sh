@@ -13,20 +13,11 @@ w="N"
 # Nombre del archivo a procesar.
 
 # WRF
-#name="prec_era5_hist_hist"
-#name="prec_hist_comp_estaciones"
-#name="prec_era5_hist_hist_days"
-#name="prec_mroc_hist_hist"
-#name="prec_mroc_h20a_hist"
-#name="prec_mroc_hist_hist_days"
-#name="prec_mroc_2040_2040"
-#name="prec_mroc_2040_2040_coarsen_5"
-#name="prec_mroc_h20a_hist_coarsen_10"
-#name="WRF_regrid_CHIRPS_days_qmap"
-#name="WRF_regrid_ERA5_1985_2014"
-#name="WRF_regrid_ERA5_2040_2059"
 #name="WRF_regrid_ERA5_1985_2014_qmap"
-name="WRF_regrid_ERA5_2040_2059_qmap"
+#name="WRF_regrid_ERA5_2040_2059_qmap"
+#name="WRF_regrid_ERA5_2080_2089_qmap"
+#name="WRF_regrid_ERA5_2040_2060_100PorcUrbano_qmap"
+name="WRF_regrid_ERA5_2080_2089_100PorcUrbano_qmap"
 #name="era5-land_total-precipitation"
 
 # CHIRPS

@@ -29,8 +29,8 @@ cols = ["k", "m", "n", "c", "error"]
 df_3[ cols ] = None
 
 # Creamos la tabla a predecir.
-d_l = [ 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5 ]
-t_l = [ 1, 2, 5, 10, 25, 50, 100, 200, 500, 1000 ]
+d_l = [ 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 6, 8, 10, 12, 15, 24 ]
+t_l = [ 1, 2, 5, 10, 25, 50, 100, 200, 500, 1000, 10000 ]
 
 # Repetimos para cada duración
 #if period == "horas":

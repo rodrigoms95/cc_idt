@@ -70,7 +70,7 @@ for i in df_3.index.get_level_values("LONGITUD").unique():
         X = np.swapaxes( df_4[ ["TIEMPO_RETORNO", "DURACION"] ].values, 0, 1 )
         # Cálculo de parámetros.
         fit = optimize.curve_fit( f = idT, xdata = X, ydata = Y,
-            full_output = True, maxfev = 10000 )
+            full_output = True, maxfev = int(1e6) )
 
         # Coeficientes de las curvas idT.
         df_3.loc[ (i, j), cols[:-1] ] = fit[0]

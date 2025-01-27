@@ -6,6 +6,10 @@ import xarray as xr
 import xesmf as xe
 import numpy as np
 
+# Para archivos procesados previamente por Miguel
+#fname_in = "/home/rodr/buffalo/SalidasWRF/Precipitacion/zzz_Pcp_WRF_MIROC6_204001-206012_HoraZ_NoCUS_SinCambioAlbedo.nc"
+#scn = "2040_2060_sinCUS"
+
 # Cargamos el archivo de WRF.
 # Historico
 scn = sys.argv[1]

@@ -17,7 +17,8 @@ w="N"
 #name="WRF_regrid_ERA5_2040_2059_qmap"
 #name="WRF_regrid_ERA5_2080_2089_qmap"
 #name="WRF_regrid_ERA5_2040_2060_100PorcUrbano_qmap"
-name="WRF_regrid_ERA5_2080_2089_100PorcUrbano_qmap"
+#name="WRF_regrid_ERA5_2080_2089_100PorcUrbano_qmap"
+name="WRF_regrid_ERA5_2040_2060_sinCUS_qmap"
 #name="era5-land_total-precipitation"
 
 # CHIRPS

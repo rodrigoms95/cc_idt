@@ -7,7 +7,7 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # Escenario a calcular
 #for scn in "2040_2060" "2080_2089" "2040_2060_100PorcUrbano" "2080_2089_100PorcUrbano"; do
-for scn in "2080_2089" "2040_2060_100PorcUrbano" "2080_2089_100PorcUrbano"; do
+for scn in "2040_2059sinCUS"; do
     dr=/home/rodr/buffalo/rodr/WRF/$scn/$scn
     printf "\nCalculando precipitación para $scn\n"
     # Copiamos los archivos
